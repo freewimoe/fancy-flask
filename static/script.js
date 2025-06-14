@@ -39,21 +39,30 @@ window.addEventListener("DOMContentLoaded", () => {
   const nameInput = document.getElementById("nameInput");
   const startBtn = document.getElementById("startBtn");
 
-  if (startScreen && startBtn && nameInput) {
+  const savedName = localStorage.getItem("userName");
+
+  if (!savedName && startScreen && mainContent) {
+    startScreen.style.display = "flex";
+    mainContent.style.display = "none";
+
     startBtn.addEventListener("click", () => {
       const name = nameInput.value.trim();
       if (name) {
         localStorage.setItem("userName", name);
-        location.reload();
+        startScreen.style.display = "none";
+        mainContent.style.display = "block";
+        loadQuotes();
+        bgMusic?.play().catch(err => console.warn("Music start failed:", err));
       }
     });
   } else {
-    const bgMusic = document.getElementById("bgMusic");
-    if (bgMusic && userName) {
-      bgMusic.play().catch(err => console.log("Autoplay prevented:", err));
-    }
+    startScreen.style.display = "none";
+    mainContent.style.display = "block";
+    loadQuotes();
+    bgMusic?.play().catch(err => console.warn("Music start failed:", err));
   }
 });
+
 
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 function setTheme(theme) {

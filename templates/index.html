@@ -4,20 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chill Lounge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body data-theme="light">
   <!-- Startscreen -->
   {% if not name %}
-  <div id="startScreen">
-    <h1>Willkommen in der Chill Lounge</h1>
-    <p>Gib deinen Namen ein:</p>
-    <input type="text" id="nameInput" placeholder="Dein Name..." />
-    <button id="startBtn">Start</button>
-  </div>
+<div id="startScreen" class="start-screen">
+  <h1>Willkommen in der Chill Lounge</h1>
+  <input type="text" id="nameInput" placeholder="Dein Name..." />
+  <button id="startBtn">🎧 Start</button>
+</div>
+
   {% else %}
   <!-- Hauptinhalt -->
-  <div id="mainContent">
+  <div id="mainContent" style="display:none;">
     <h1>Hi {{ name }} 👋 Willkommen in der Chill Lounge</h1>
     <p>Besucher: {{ visitor_count }}</p>
 
