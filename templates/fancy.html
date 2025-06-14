@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Super Fancy Flask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ greeting }} {{ emoji }}</h1>
+        {% if name %}
+            <h2>Willkommen, {{ name }}!</h2>
+        {% else %}
+            <form method="post">
+                <input type="text" name="name" placeholder="Wie heißt du?" required>
+                <button type="submit">Sag Hallo</button>
+            </form>
+        {% endif %}
+        <div class="clock" id="clock">⏳</div>
+        <!-- Optional Audio -->
+        <audio autoplay loop>
+            <source src="{{ url_for('static', filename='Lowtone Music - Chill Journey.mp3') }}" type="audio/mp3">
+        </audio>
+    </div>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent =
+                now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

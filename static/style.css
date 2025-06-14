@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: gradientBG 10s ease infinite;
+    background: linear-gradient(270deg, #fbd3e9, #bbd0ff, #fbc2eb);
+    background-size: 600% 600%;
+    transition: all 0.5s ease;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+input, button {
+    font-size: 1em;
+    padding: 0.5em 1em;
+    margin: 0.5em;
+    border: none;
+    border-radius: 10px;
+}
+
+button {
+    background-color: #5d8aa8;
+    color: white;
+    cursor: pointer;
+}
+
+.clock {
+    font-size: 2em;
+    margin-top: 20px;
+}
