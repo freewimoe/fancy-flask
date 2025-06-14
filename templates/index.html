@@ -2,60 +2,66 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chill Lounge</title>
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body data-theme="light">
 
-<!-- Startscreen -->
-<div id="startScreen" class="start-screen">
-  <h1>Willkommen in der Chill Lounge</h1>
-  <input type="text" id="nameInput" placeholder="Dein Name...">
-  <button id="startBtn">🎧 Start</button>
-</div>
-
-<!-- Hauptinhalt -->
-<div id="mainContent" class="main-content" style="display:none;">
-  <h1 id="welcomeUser"></h1>
-  <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">1</span></p>
-
-  <div class="controls">
-    <label for="trackSelect">🎵</label>
-    <select id="trackSelect">
-      <option value="Lowtone Music - Chill Calm.mp3">🎵 Chill Calm</option>
-      <option value="Lowtone Music - Chill Journey.mp3">🎶 Chill Journey</option>
-      <option value="snoozy beats - night chill.mp3">🎧 Night Chill</option>
-    </select>
-
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
-    <button id="muteBtn">🔇 Mute</button>
-
-    <button id="toggleThemeBtn">🌓 Theme</button>
-    <button id="colorBtn">🎨 Farben</button>
-    <button id="emojiToggleBtn">🌧️ Emoji-Regen: AUS</button>
-  </div>
-
-  <audio id="bgMusic" loop autoplay></audio>
-
-  <div class="quote-section">
-    <blockquote id="quoteDisplay">Zitat wird geladen...</blockquote>
-    <form id="quoteForm">
-      <input type="text" id="newQuote" placeholder="Eigenes Zitat...">
-      <button type="submit">➕ Hinzufügen</button>
+  {% if not name %}
+  <!-- Startscreen -->
+  <div class="start-screen">
+    <form method="POST">
+      <h1>Willkommen in der Chill Lounge</h1>
+      <input type="text" name="name" id="nameInput" placeholder="Dein Name..." required />
+      <button type="submit" id="startBtn">🎧 Start</button>
     </form>
   </div>
-</div>
+  {% else %}
+  <!-- Hauptinhalt -->
+  <div class="main-content">
+    <h2>Hi {{ name }} 👋 Willkommen in der Chill Lounge</h2>
+    <p>Besucher: {{ visitor_count }}</p>
 
-<!-- Emoji Regen -->
-<div id="emoji-rain"></div>
-<div id="fog-layer"></div>
+    <div class="controls">
+      <label for="trackSelect">🎶</label>
+      <select id="trackSelect">
+        <option value="Lowtone Music - Chill Calm.mp3">Chill Calm</option>
+        <option value="Lowtone Music - Chill Journey.mp3">Chill Journey</option>
+        <option value="snoozy beats - night chill.mp3">Night Chill</option>
+      </select>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+      <button id="muteBtn">🔇 Mute</button>
+      <button id="toggleThemeBtn">🌓 Theme</button>
+      <button id="colorBtn">🎨 Farben</button>
+      <button id="emojiToggleBtn">🌧️ Emoji-Regen: AUS</button>
+    </div>
 
-<script>
-  const userName = localStorage.getItem("userName") || "";
-  const visitorCount = 1;
-</script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <div class="quote-section">
+      <blockquote id="quoteDisplay">Zitat lädt...</blockquote>
+      <form id="quoteForm">
+        <input type="text" id="newQuote" placeholder="Eigenes Zitat...">
+        <button type="submit">➕ Hinzufügen</button>
+      </form>
+    </div>
+
+    <audio id="bgMusic" loop autoplay>
+      <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
+    </audio>
+
+  </div>
+  {% endif %}
+
+  <!-- Emoji- & Nebeleffekte -->
+  <div id="emoji-rain"></div>
+  <div id="fog-layer"></div>
+
+  <!-- Skript -->
+  <script>
+    const userName = "{{ name | safe }}";
+    const visitorCount = {{ visitor_count | default(0) }};
+  </script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
