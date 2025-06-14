@@ -1,6 +1,5 @@
-// Variablen aus Jinja-Template in HTML gesetzt:
-// const userName = "...";
-// const visitorCount = "...";
+// userName aus localStorage lesen, um Kompatibilität mit Startscreen zu sichern
+const userName = localStorage.getItem("userName");
 
 const quoteDisplay = document.getElementById("quoteDisplay");
 let userQuotes = [];
@@ -15,6 +14,7 @@ async function loadQuotes() {
     allQuotes = baseQuotes.concat(userQuotes);
 
     function rotateQuotes() {
+      if (!quoteDisplay) return;
       quoteDisplay.style.opacity = 0;
       setTimeout(() => {
         const index = Math.floor(Math.random() * allQuotes.length);
@@ -26,12 +26,10 @@ async function loadQuotes() {
     rotateQuotes();
     setInterval(rotateQuotes, 8000);
   } catch (err) {
-    quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+    if (quoteDisplay) quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
     console.error(err);
   }
 }
-
-if (userName) loadQuotes();
 
 window.addEventListener("DOMContentLoaded", () => {
   const startScreen = document.getElementById("startScreen");
@@ -39,13 +37,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const nameInput = document.getElementById("nameInput");
   const startBtn = document.getElementById("startBtn");
 
-  const savedName = localStorage.getItem("userName");
-
-  if (!savedName && startScreen && mainContent) {
+  if (!userName && startScreen && mainContent) {
     startScreen.style.display = "flex";
     mainContent.style.display = "none";
-
-    startBtn.addEventListener("click", () => {
+    startBtn?.addEventListener("click", () => {
       const name = nameInput.value.trim();
       if (name) {
         localStorage.setItem("userName", name);
@@ -56,13 +51,12 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   } else {
-    startScreen.style.display = "none";
-    mainContent.style.display = "block";
+    if (startScreen) startScreen.style.display = "none";
+    if (mainContent) mainContent.style.display = "block";
     loadQuotes();
     bgMusic?.play().catch(err => console.warn("Music start failed:", err));
   }
 });
-
 
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 function setTheme(theme) {
@@ -79,6 +73,17 @@ function setTheme(theme) {
     if (!fog) {
       fog = document.createElement("div");
       fog.id = "fog-layer";
+      fog.style.background = "url('/static/Foggy_1.png'), url('/static/Foggy_2.png')";
+      fog.style.backgroundSize = "200% 100%, 300% 100%";
+      fog.style.animation = "fogAnim 60s linear infinite";
+      fog.style.opacity = "0.2";
+      fog.style.position = "fixed";
+      fog.style.top = "0";
+      fog.style.left = "0";
+      fog.style.width = "100%";
+      fog.style.height = "100%";
+      fog.style.pointerEvents = "none";
+      fog.style.zIndex = "2";
       document.body.appendChild(fog);
     }
   } else {
@@ -104,8 +109,10 @@ const gradients = [
   "linear-gradient(to right, #A1C4FD, #C2FFD8)"
 ];
 function applyGradient(g) {
-  document.body.style.background = g;
-  localStorage.setItem("gradient", g);
+  if (document.body.dataset.theme !== "dark") {
+    document.body.style.background = g;
+    localStorage.setItem("gradient", g);
+  }
 }
 colorBtn?.addEventListener("click", () => {
   const g = gradients[Math.floor(Math.random() * gradients.length)];
@@ -179,13 +186,13 @@ function createEmoji() {
   emoji.classList.add("emoji");
   emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
   emoji.style.left = Math.random() * 100 + "vw";
-  emoji.style.animationDuration = (Math.random() * 2 + 3) + "s";
+  emoji.style.animationDuration = (Math.random() * 4 + 4) + "s";
   emojiContainer.appendChild(emoji);
-  setTimeout(() => emoji.remove(), 5000);
+  setTimeout(() => emoji.remove(), 8000);
 }
 
 function startEmojiRain() {
-  if (!emojiInterval) emojiInterval = setInterval(createEmoji, 300);
+  if (!emojiInterval) emojiInterval = setInterval(createEmoji, 400);
 }
 
 function stopEmojiRain() {

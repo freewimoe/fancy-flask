@@ -1,6 +1,6 @@
-/* Basis-Layout */
+/* Allgemeines Layout */
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Comfortaa', sans-serif;
   margin: 0;
   padding: 0;
   transition: background 0.5s ease, color 0.5s ease;
@@ -9,166 +9,121 @@ body {
   min-height: 100vh;
 }
 
-/* Dark Theme */
 body[data-theme="dark"] {
-  background: #121212;
-  color: #e0e0e0;
+  color: #eee;
 }
 
-header.topbar {
-  padding: 1rem;
-  text-align: center;
-}
-
-.controls {
+/* Startscreen */
+.start-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #2c3e50, #bdc3c7);
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  text-align: center;
+  z-index: 1000;
+}
+
+.start-screen h1 {
+  font-size: 3rem;
   margin-bottom: 1rem;
 }
 
-.controls label,
-.controls select,
-.controls input,
-.controls button {
-  font-size: 1rem;
-  padding: 0.4rem 0.6rem;
+#nameInput {
+  padding: 0.6rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 250px;
+  margin-bottom: 1rem;
+}
+
+#startBtn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1.2rem;
   border: none;
-  border-radius: 5px;
-  background: #ffffffaa;
-  backdrop-filter: blur(3px);
+  background-color: #3498db;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-body[data-theme="dark"] .controls label,
+/* Hauptinhalt */
+.main-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.controls {
+  margin: 1rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls select,
+.controls input[type="range"],
+.controls button {
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border: none;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+
+body[data-theme="dark"] .controls button,
 body[data-theme="dark"] .controls select,
-body[data-theme="dark"] .controls input,
-body[data-theme="dark"] .controls button {
+body[data-theme="dark"] .controls input[type="range"] {
   background: #333;
   color: #eee;
 }
 
-/* Eingabeformular */
-form#nameForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Zitate */
+.quote-section {
   margin-top: 2rem;
 }
 
-form#nameForm input {
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-form#nameForm button {
-  margin-top: 1rem;
-  background-color: #88e;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Zitate */
-.slogan {
+#quoteDisplay {
   font-style: italic;
-  font-size: 1.2rem;
-  margin-top: 1rem;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
   transition: opacity 0.5s;
-}
-
-/* Besucheranzeige */
-#visitorDisplay {
-  margin-top: 0.5rem;
-}
-
-/* Emoji Regen */
-#emoji-rain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-}
-
-.emoji {
-  position: absolute;
-  top: -2rem;
-  font-size: 2rem;
-  animation: fall linear;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(110vh);
-    opacity: 0;
-  }
-}
-
-/* Zitat hinzufügen */
-.quote-input {
-  margin-top: 1rem;
 }
 
 #newQuote {
   padding: 0.4rem;
-  border-radius: 4px;
-  border: 1px solid #888;
-  width: 60%;
+  font-size: 1rem;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 #quoteForm button {
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
   border: none;
-  background-color: #6c9;
+  background-color: #2ecc71;
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-left: 0.5rem;
   cursor: pointer;
 }
 
-
-/* Nebel-Schicht */
-#fog-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: url('/static/Foggy_1.png'), url('/static/Foggy_2.png');
-  background-size: 200% 100%, 300% 100%;
-  animation: fogAnim 60s linear infinite;
-  opacity: 0.15;
-  z-index: 2;
-}
-
-@keyframes fogAnim {
-  0% {
-    background-position: 0% 0%, 100% 0%;
-  }
-  100% {
-    background-position: 100% 0%, 0% 0%;
-  }
-}
-
-/* Nebel-Grafiken bitte als PNG transparent, z.B. aus: https://transparenttextures.com */
-
+/* Emoji-Regen */
 #emoji-rain {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 999;
 }
 
 .emoji {
@@ -192,49 +147,25 @@ form#nameForm button {
   }
 }
 
-body {
-  font-family: 'Comfortaa', cursive;
-}
-
-.start-screen {
+/* Nebel-Animation */
+#fog-layer {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(to bottom, #f0f0f0, #d0f4f4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  text-align: center;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: url('/static/Foggy_1.png'), url('/static/Foggy_2.png');
+  background-size: 200% 100%, 300% 100%;
+  animation: fogAnim 60s linear infinite;
+  opacity: 0.2;
 }
 
-.start-screen h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-}
-
-#nameInput {
-  font-size: 1.2rem;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  width: 250px;
-  margin-bottom: 20px;
-}
-
-#startBtn {
-  font-size: 1.2rem;
-  padding: 10px 20px;
-  border: none;
-  background: #7ad7f0;
-  color: #fff;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-#startBtn:hover {
-  background: #5ccfe6;
+@keyframes fogAnim {
+  0% {
+    background-position: 0% 0%, 100% 0%;
+  }
+  100% {
+    background-position: 100% 0%, 0% 0%;
+  }
 }
