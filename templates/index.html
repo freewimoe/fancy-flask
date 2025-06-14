@@ -53,7 +53,11 @@
     <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
   </audio>
   {% endif %}
-
+  
+<script>
+  const userName = "{{ name|default('', true) }}";
+  const visitorCount = "{{ visitor_count|default(0) }}";
+</script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
