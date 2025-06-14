@@ -13,13 +13,13 @@ body {
 }
 
 body[data-theme="dark"] {
-  color: #cbd5e1;
-  background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+  color: #f0f0f0;
+  background: linear-gradient(to bottom, #050505, #101010, #1b1b1b);
   background-image: url('/static/moon.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 75%;
-  font-family: 'Lora', serif;
+  font-family: 'Cinzel', serif;
 }
 
 /* Startscreen */
@@ -167,7 +167,8 @@ body[data-theme="dark"] .controls input[type="range"] {
   background: url('/static/Foggy_1.png'), url('/static/Foggy_2.png');
   background-size: 200% 100%, 300% 100%;
   animation: fogAnim 60s linear infinite;
-  opacity: 0.2;
+  opacity: 0.25;
+  filter: brightness(0.4) contrast(1.4);
 }
 
 @keyframes fogAnim {

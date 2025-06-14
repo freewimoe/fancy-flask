@@ -1,64 +1,33 @@
-// Wichtige DOM-Elemente referenzieren
-const startScreen = document.getElementById("startScreen");
-const mainContent = document.getElementById("mainContent");
-const nameInput = document.getElementById("nameInput");
-const startBtn = document.getElementById("startBtn");
-const quoteDisplay = document.getElementById("quoteDisplay");
-const emojiContainer = document.getElementById("emoji-rain");
+// Globale Konstanten
 const emojiToggleBtn = document.getElementById("emojiToggleBtn");
-const bgMusic = document.getElementById("bgMusic");
 const trackSelect = document.getElementById("trackSelect");
 const volume = document.getElementById("volume");
 const muteBtn = document.getElementById("muteBtn");
-
-// Name-Handling
-if (startBtn) {
-  startBtn.addEventListener("click", () => {
-    const name = nameInput.value.trim();
-    if (name) {
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.style.display = "none";
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "name";
-      input.value = name;
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-    }
-  });
-}
-
-// Dark Mode mit Mond & Fog
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-function setTheme(theme) {
-  document.body.dataset.theme = theme;
-  localStorage.setItem("theme", theme);
-  if (theme === "dark") {
-    if (!document.getElementById("fog-layer")) {
-      const fog = document.createElement("div");
-      fog.id = "fog-layer";
-      document.body.appendChild(fog);
-    }
-  } else {
-    const fog = document.getElementById("fog-layer");
-    if (fog) fog.remove();
-  }
-}
-toggleThemeBtn?.addEventListener("click", () => {
-  const current = document.body.dataset.theme || "light";
-  setTheme(current === "light" ? "dark" : "light");
-});
-setTheme(localStorage.getItem("theme") || "light");
+const colorBtn = document.getElementById("colorBtn");
+const bgMusic = document.getElementById("bgMusic");
+const quoteDisplay = document.getElementById("quoteDisplay");
+const quoteForm = document.getElementById("quoteForm");
+const emojiContainer = document.getElementById("emoji-rain");
 
-// Emoji Regen
+let emojiRainOn = false;
+let emojiInterval = null;
+let userQuotes = [];
+let allQuotes = [];
+
 const emojis = [
   "🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐",
   "🦄", "🌈", "🎊", "🌌", "🫧", "🕊️", "🐉", "🛸", "🧚", "🪽"
 ];
-let emojiRainOn = false;
-let emojiInterval = null;
+
+const gradients = [
+  "linear-gradient(to right, #FFDEE9, #B5FFFC)",
+  "linear-gradient(to right, #D5FFD0, #FDCB82)",
+  "linear-gradient(to right, #C9FFBF, #FBD3E9)",
+  "linear-gradient(to right, #A1C4FD, #C2FFD8)"
+];
+
+// Emoji-Regen
 function createEmoji() {
   const emoji = document.createElement("div");
   emoji.classList.add("emoji");
@@ -68,84 +37,89 @@ function createEmoji() {
   emojiContainer.appendChild(emoji);
   setTimeout(() => emoji.remove(), 6000);
 }
+
 function startEmojiRain() {
   if (!emojiInterval) emojiInterval = setInterval(createEmoji, 300);
 }
+
 function stopEmojiRain() {
   clearInterval(emojiInterval);
   emojiInterval = null;
 }
+
 function toggleEmojiRain() {
   emojiRainOn = !emojiRainOn;
   localStorage.setItem("emojiRainOn", emojiRainOn ? "true" : "false");
   emojiToggleBtn.textContent = emojiRainOn ? "🌧️ Emoji-Regen: AN" : "🌧️ Emoji-Regen: AUS";
-  emojiRainOn ? startEmojiRain() : stopEmojiRain();
+  if (emojiRainOn) startEmojiRain(); else stopEmojiRain();
 }
-emojiToggleBtn?.addEventListener("click", toggleEmojiRain);
-if (localStorage.getItem("emojiRainOn") === "true") toggleEmojiRain();
 
-// Quotes laden
-let userQuotes = [];
-let allQuotes = [];
+// Zitate
 async function loadQuotes() {
   try {
-    const res = await fetch("/static/quotes.json");
-    const baseQuotes = await res.json();
+    const response = await fetch("/static/quotes.json");
+    const baseQuotes = await response.json();
     const savedUserQuotes = localStorage.getItem("userQuotes");
     if (savedUserQuotes) userQuotes = JSON.parse(savedUserQuotes);
     allQuotes = baseQuotes.concat(userQuotes);
+
     function rotateQuotes() {
+      if (!quoteDisplay) return;
       quoteDisplay.style.opacity = 0;
       setTimeout(() => {
-        quoteDisplay.textContent = allQuotes[Math.floor(Math.random() * allQuotes.length)];
+        const index = Math.floor(Math.random() * allQuotes.length);
+        quoteDisplay.textContent = allQuotes[index];
         quoteDisplay.style.opacity = 1;
       }, 500);
     }
+
     rotateQuotes();
     setInterval(rotateQuotes, 8000);
   } catch (err) {
-    quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+    if (quoteDisplay) quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
     console.error(err);
   }
 }
-loadQuotes();
 
-document.getElementById("quoteForm")?.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = document.getElementById("newQuote");
-  const text = input.value.trim();
-  if (text) {
-    allQuotes.push(text);
-    userQuotes.push(text);
-    localStorage.setItem("userQuotes", JSON.stringify(userQuotes));
-    input.value = "";
-    alert("Zitat hinzugefügt!");
+// Theme & Farben
+function setTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem("theme", theme);
+
+  if (theme === "dark") {
+    document.body.style.background = "linear-gradient(to bottom, #050505, #101010, #1b1b1b)";
+    document.body.style.backgroundImage = "url('/static/moon.png')";
+    document.body.style.backgroundSize = "75%";
+    document.body.style.backgroundPosition = "center center";
+    document.body.style.backgroundRepeat = "no-repeat";
+  } else {
+    const savedGradient = localStorage.getItem("gradient") || gradients[0];
+    document.body.style.background = savedGradient;
+    document.body.style.backgroundImage = "none";
   }
-});
+}
+
+function applyGradient(g) {
+  document.body.style.background = g;
+  localStorage.setItem("gradient", g);
+}
 
 // Musiksteuerung
-if (bgMusic) {
+function setupMusicControls() {
   const savedTrack = localStorage.getItem("selectedTrack");
-  if (savedTrack) {
+  if (savedTrack && bgMusic) {
     bgMusic.src = `/static/${savedTrack}`;
-    if (trackSelect) trackSelect.value = savedTrack;
-  } else {
-    bgMusic.src = `/static/Lowtone Music - Chill Calm.mp3`;
+    trackSelect.value = savedTrack;
   }
-
   const savedVolume = localStorage.getItem("volume");
-  if (savedVolume) {
+  if (savedVolume && bgMusic) {
     volume.value = savedVolume;
     bgMusic.volume = savedVolume;
   }
-
-  const savedMuted = localStorage.getItem("muted");
-  if (savedMuted === "true") {
+  if (localStorage.getItem("muted") === "true" && bgMusic) {
     bgMusic.volume = 0;
     muteBtn.textContent = "🔈 Unmute";
   }
-
-  bgMusic.play().catch(err => console.warn("Autoplay prevented:", err));
 
   trackSelect?.addEventListener("change", () => {
     const file = trackSelect.value;
@@ -171,3 +145,43 @@ if (bgMusic) {
     }
   });
 }
+
+// Eventlistener
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("emojiRainOn") === "true") toggleEmojiRain();
+  const savedTheme = localStorage.getItem("theme") || "light";
+  setTheme(savedTheme);
+
+  const savedGradient = localStorage.getItem("gradient");
+  if (savedTheme !== "dark" && savedGradient) applyGradient(savedGradient);
+
+  setupMusicControls();
+  loadQuotes();
+});
+
+// Button Events
+toggleThemeBtn?.addEventListener("click", () => {
+  const current = document.body.dataset.theme || "light";
+  setTheme(current === "light" ? "dark" : "light");
+});
+
+colorBtn?.addEventListener("click", () => {
+  if (document.body.dataset.theme === "dark") return;
+  const g = gradients[Math.floor(Math.random() * gradients.length)];
+  applyGradient(g);
+});
+
+emojiToggleBtn?.addEventListener("click", toggleEmojiRain);
+
+quoteForm?.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const input = document.getElementById("newQuote");
+  const text = input.value.trim();
+  if (text) {
+    allQuotes.push(text);
+    userQuotes.push(text);
+    localStorage.setItem("userQuotes", JSON.stringify(userQuotes));
+    input.value = "";
+    alert("Zitat hinzugefügt!");
+  }
+});
