@@ -1,72 +1,92 @@
-body[data-theme="light"] {
-  --bg-color: #fff0f8;
-  --text-color: #222;
-  --box-bg: rgba(255, 255, 255, 0.9);
-}
-
-body[data-theme="dark"] {
-  --bg-color: #121212;
-  --text-color: #ddd;
-  --box-bg: rgba(40, 40, 40, 0.95);
-}
-
+/* Grundlayout */
 body {
-  background: var(--bg-color);
-  color: var(--text-color);
-  transition: background 0.8s ease, color 0.8s ease;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background 0.5s, color 0.5s;
+  background: linear-gradient(to right, #FFDEE9, #B5FFFC);
+  color: #222;
 }
 
+/* Dark Theme */
+body[data-theme='dark'] {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+/* Kopfbereich */
 .topbar {
-  background: var(--box-bg);
+  padding: 1em;
+  text-align: center;
 }
 
-
-body {
-    margin: 0;
-    padding-top: 110px;
-    font-family: 'Segoe UI', sans-serif;
-    background: #fff0f8;
-    overflow: hidden;
-    transition: background 1s ease-in-out;
-}
-
-.topbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 10px 20px;
-    z-index: 1000;
-    text-align: center;
-}
-
+/* Steuerleiste */
 .controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1em;
 }
 
-button, select, input[type="range"] {
-    font-size: 1em;
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: white;
+/* Emoji-Container */
+#emoji-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 10;
 }
 
+/* Emoji-Stil */
+.emoji {
+  position: absolute;
+  font-size: 2em;
+  animation-name: fall;
+  animation-timing-function: linear;
+}
+
+/* Fallanimation */
+@keyframes fall {
+  0% { top: -5vh; opacity: 1; }
+  100% { top: 100vh; opacity: 0; }
+}
+
+/* Zitate & Eingabe */
 .slogan {
-    font-style: italic;
-    margin-top: 8px;
-    font-size: 1em;
-    color: #444;
-    transition: opacity 1s ease-in-out;
+  font-style: italic;
+  margin: 1em 0;
+  font-size: 1.2em;
 }
-#visitorDisplay {
-  font-size: 0.9em;
-  color: var(--text-color);
-  margin-top: 6px;
+
+.quote-input {
+  margin-top: 1em;
 }
- 
+
+#quoteForm input {
+  padding: 0.5em;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  font-size: 1em;
+  width: 60%;
+  max-width: 300px;
+}
+
+#quoteForm button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  margin-left: 10px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+form#nameForm {
+  margin: 2em 0;
+}

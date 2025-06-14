@@ -1,32 +1,29 @@
-from flask import Flask, render_template, request, jsonify
-from datetime import datetime
-import random
-import json
+from flask import Flask, render_template, request
 import os
 
 app = Flask(__name__)
-COUNTER_FILE = "visitor_count.json"
+VISITOR_FILE = "visitor_count.txt"
 
-def increment_visitor_count():
-    if not os.path.exists(COUNTER_FILE):
-        with open(COUNTER_FILE, "w") as f:
-            json.dump({"count": 1}, f)
-        return 1
-    with open(COUNTER_FILE, "r") as f:
-        data = json.load(f)
-    data["count"] += 1
-    with open(COUNTER_FILE, "w") as f:
-        json.dump(data, f)
-    return data["count"]
+def get_visitor_count():
+    if not os.path.exists(VISITOR_FILE):
+        with open(VISITOR_FILE, "w") as f:
+            f.write("0")
+    with open(VISITOR_FILE, "r+") as f:
+        count = int(f.read().strip())
+        count += 1
+        f.seek(0)
+        f.write(str(count))
+        f.truncate()
+    return count
 
 @app.route("/", methods=["GET", "POST"])
-def home():
-    name = request.form.get("name", "")
-    count = increment_visitor_count()
-    return render_template("fancy.html", name=name, visitor_count=count)
+def index():
+    name = None
+    if request.method == "POST":
+        name = request.form.get("name")
+        visitor_count = get_visitor_count()
+        return render_template("index.html", name=name, visitor_count=visitor_count)
+    return render_template("index.html", name=None, visitor_count=0)
 
-@app.route("/counter")
-def get_counter():
-    with open(COUNTER_FILE, "r") as f:
-        data = json.load(f)
-    return jsonify(data)
+if __name__ == "__main__":
+    app.run(debug=True)
