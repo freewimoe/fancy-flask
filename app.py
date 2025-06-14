@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, render_template, request
 from datetime import datetime
 import random
@@ -5,6 +6,11 @@ import random
 app = Flask(__name__)
 
 emojis = ["🌈", "🚀", "🌟", "🎉", "🦄", "🧠", "🎵", "🎨", "✨"]
+quotes = [
+    "Der Weg ist das Ziel.",
+    "Verweile nicht in der Vergangenheit, träume nicht von der Zukunft, konzentriere dich auf den gegenwärtigen Moment.",
+    "Glaube an Wunder, Liebe und Glück!"
+]
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -16,7 +22,8 @@ def home():
         "Guten Abend 🌙"
     )
     emoji = random.choice(emojis)
-    return render_template("fancy.html", greeting=greeting, emoji=emoji, name=name)
+    quote = random.choice(quotes)
+    return render_template("fancy.html", greeting=greeting, emoji=emoji, name=name, quote=quote)
 
 if __name__ == '__main__':
     app.run(debug=True)

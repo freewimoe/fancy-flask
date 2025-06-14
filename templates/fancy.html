@@ -1,13 +1,15 @@
+<!-- templates/fancy.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Super Fancy Flask</title>
+    <title>Super Fancy Flask Extended</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>{{ greeting }} {{ emoji }}</h1>
+
         {% if name %}
             <h2>Willkommen, {{ name }}!</h2>
         {% else %}
@@ -16,20 +18,33 @@
                 <button type="submit">Sag Hallo</button>
             </form>
         {% endif %}
-        <div class="clock" id="clock">⏳</div>
-        <!-- Optional Audio -->
-        <audio autoplay loop>
-            <source src="{{ url_for('static', filename='Lowtone Music - Chill Journey.mp3') }}" type="audio/mp3">
-        </audio>
+
+        <div class="clock" id="clock"></div>
+
+        <div class="audio-controls">
+            <label for="trackSelect">Wähle Musik:</label>
+            <select id="trackSelect">
+                <option value="song1.mp3">🎵 Song 1</option>
+                <option value="song2.mp3">🎶 Song 2</option>
+                <option value="song3.mp3">🎧 Song 3</option>
+            </select>
+            <br>
+            <label for="volume">Lautstärke:</label>
+            <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+            <button id="muteBtn">🔇 Mute</button>
+        </div>
+
+        <div id="quote" class="quote">"{{ quote }}"</div>
+
+        <canvas id="emojiRain"></canvas>
+
+        <button onclick="changeGradient()">🔁 Farbwechsel</button>
     </div>
-    <script>
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent =
-                now.toLocaleTimeString();
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
+
+    <audio id="bgm" autoplay loop>
+        <source src="{{ url_for('static', filename='song1.mp3') }}" type="audio/mp3">
+    </audio>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
