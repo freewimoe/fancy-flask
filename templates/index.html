@@ -1,64 +1,68 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chill Lounge</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <header class="topbar">
-    <div class="controls">
+<body data-theme="light">
+  <!-- Startscreen -->
+  {% if not name %}
+  <div id="startScreen">
+    <h1>Willkommen in der Chill Lounge</h1>
+    <p>Gib deinen Namen ein:</p>
+    <input type="text" id="nameInput" placeholder="Dein Name..." />
+    <button id="startBtn">Start</button>
+  </div>
+  {% else %}
+  <!-- Hauptinhalt -->
+  <div id="mainContent">
+    <h1>Hi {{ name }} 👋 Willkommen in der Chill Lounge</h1>
+    <p>Besucher: {{ visitor_count }}</p>
+
+    <!-- Hintergrundmusik -->
+    <div class="audio-controls">
       <label for="trackSelect">Wähle Musik:</label>
       <select id="trackSelect">
         <option value="Lowtone Music - Chill Calm.mp3">🎵 Chill Calm (1)</option>
         <option value="Lowtone Music - Chill Journey.mp3">🎶 Chill Journey (2)</option>
         <option value="snoozy beats - night chill.mp3">🎧 Night Chill (3)</option>
       </select>
-
-      <label for="volume">🔊</label>
-      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
       <button id="muteBtn">🔇 Mute</button>
-      <button id="colorBtn">🎨 Farbwechsel</button>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+      <audio id="bgMusic" loop autoplay></audio>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-bar">
       <button id="toggleThemeBtn">🌓 Dark/Light Mode</button>
+      <button id="colorBtn">🎨 Farbwechsel</button>
       <button id="emojiToggleBtn">🌧️ Emoji-Regen: AUS</button>
     </div>
 
-    {% if name %}
-      <h2>👋 Willkommen in der Chill Lounge, {{ name }}!</h2>
-    {% else %}
-      <form method="post" id="nameForm">
-        <label for="nameInput">Chill Lounge: Gib deinen Namen an.</label>
-        <input type="text" name="name" id="nameInput" placeholder="Dein Name" required>
-        <button type="submit">Start</button>
+    <!-- Zitatbereich -->
+    <div id="quoteBox">
+      <blockquote id="quoteDisplay">Zitat lädt...</blockquote>
+      <form id="quoteForm">
+        <input type="text" id="newQuote" placeholder="Eigenes Zitat hinzufügen">
+        <button type="submit">➕</button>
       </form>
-    {% endif %}
+    </div>
 
-    {% if name %}
-      <p class="slogan" id="quoteDisplay">„Glaube an Wunder, Liebe und Glück!“</p>
-      <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">{{ visitor_count }}</span></p>
-
-      <div class="quote-input">
-        <form id="quoteForm">
-          <input type="text" id="newQuote" placeholder="Eigenes Zitat hinzufügen..." required>
-          <button type="submit">➕ Hinzufügen</button>
-        </form>
-      </div>
-    {% endif %}
-  </header>
-
-  <div id="emoji-rain"></div>
-
-  {% if name %}
-  <audio id="bgMusic" loop>
-    <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
-  </audio>
+    <!-- Emoji-Regen Container -->
+    <div id="emoji-rain"></div>
+  </div>
   {% endif %}
-  
-<script>
-  const userName = "{{ name|default('', true) }}";
-  const visitorCount = "{{ visitor_count|default(0) }}";
-</script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
 
+  <!-- Animierter Nebel -->
+  <div id="fog-layer"></div>
+
+  <!-- JS -->
+  <script>
+    const userName = "{{ name | safe }}";
+    const visitorCount = "{{ visitor_count }}";
+  </script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

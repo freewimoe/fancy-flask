@@ -34,9 +34,24 @@ async function loadQuotes() {
 if (userName) loadQuotes();
 
 window.addEventListener("DOMContentLoaded", () => {
-  const bgMusic = document.getElementById("bgMusic");
-  if (bgMusic && userName) {
-    bgMusic.play().catch(err => console.log("Autoplay prevented:", err));
+  const startScreen = document.getElementById("startScreen");
+  const mainContent = document.getElementById("mainContent");
+  const nameInput = document.getElementById("nameInput");
+  const startBtn = document.getElementById("startBtn");
+
+  if (startScreen && startBtn && nameInput) {
+    startBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (name) {
+        localStorage.setItem("userName", name);
+        location.reload();
+      }
+    });
+  } else {
+    const bgMusic = document.getElementById("bgMusic");
+    if (bgMusic && userName) {
+      bgMusic.play().catch(err => console.log("Autoplay prevented:", err));
+    }
   }
 });
 
@@ -47,14 +62,22 @@ function setTheme(theme) {
 
   if (theme === "dark") {
     document.body.style.background = "linear-gradient(to bottom, #0f2027, #203a43, #2c5364)";
-    document.body.style.backgroundImage = "url('/static/moonlight.png')";
+    document.body.style.backgroundImage = "url('/static/moon.png')";
     document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundPosition = "top right";
-    document.body.style.backgroundSize = "150px";
+    document.body.style.backgroundPosition = "center center";
+    document.body.style.backgroundSize = "75%";
+    let fog = document.getElementById("fog-layer");
+    if (!fog) {
+      fog = document.createElement("div");
+      fog.id = "fog-layer";
+      document.body.appendChild(fog);
+    }
   } else {
     const savedGradient = localStorage.getItem("gradient") || "linear-gradient(to right, #FFDEE9, #B5FFFC)";
     document.body.style.background = savedGradient;
     document.body.style.backgroundImage = "none";
+    const fog = document.getElementById("fog-layer");
+    if (fog) fog.remove();
   }
 }
 toggleThemeBtn?.addEventListener("click", () => {
@@ -121,9 +144,15 @@ if (bgMusic) {
   });
 
   muteBtn?.addEventListener('click', () => {
-    bgMusic.muted = !bgMusic.muted;
-    muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
-    localStorage.setItem("muted", bgMusic.muted ? "true" : "false");
+    if (bgMusic.volume > 0) {
+      localStorage.setItem("prevVolume", bgMusic.volume);
+      bgMusic.volume = 0;
+      muteBtn.textContent = "🔈 Unmute";
+    } else {
+      const prev = localStorage.getItem("prevVolume") || 0.5;
+      bgMusic.volume = prev;
+      muteBtn.textContent = "🔇 Mute";
+    }
   });
 }
 

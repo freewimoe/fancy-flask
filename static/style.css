@@ -160,3 +160,35 @@ form#nameForm button {
 }
 
 /* Nebel-Grafiken bitte als PNG transparent, z.B. aus: https://transparenttextures.com */
+
+#emoji-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.emoji {
+  position: absolute;
+  font-size: 2rem;
+  animation: fallSnow 6s linear forwards;
+  opacity: 0.8;
+}
+
+@keyframes fallSnow {
+  0% {
+    transform: translateY(-10%) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
