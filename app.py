@@ -5,7 +5,6 @@ import json
 import os
 
 app = Flask(__name__)
-
 COUNTER_FILE = "visitor_count.json"
 
 def increment_visitor_count():
@@ -13,21 +12,18 @@ def increment_visitor_count():
         with open(COUNTER_FILE, "w") as f:
             json.dump({"count": 1}, f)
         return 1
-
     with open(COUNTER_FILE, "r") as f:
         data = json.load(f)
-
     data["count"] += 1
-
     with open(COUNTER_FILE, "w") as f:
         json.dump(data, f)
-
     return data["count"]
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
+    name = request.form.get("name", "")
     count = increment_visitor_count()
-    return render_template("fancy.html", visitor_count=count)
+    return render_template("fancy.html", name=name, visitor_count=count)
 
 @app.route("/counter")
 def get_counter():

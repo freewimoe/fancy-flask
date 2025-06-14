@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Super Fancy Flask Extended</title>
+  <title>Fancy Flask Extended</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -17,72 +17,102 @@
 
       <label for="volume">🔊</label>
       <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
-
       <button id="muteBtn">🔇 Mute</button>
       <button id="colorBtn">🎨 Farbwechsel</button>
+      <button id="toggleThemeBtn">🌓 Dark/Light Mode</button>
     </div>
+
+    {% if name %}
+      <h2>👋 Willkommen, {{ name }}!</h2>
+    {% else %}
+      <form method="post" id="nameForm">
+        <input type="text" name="name" placeholder="Wie heißt du?" required>
+        <button type="submit">Sag Hallo</button>
+      </form>
+    {% endif %}
+
     <p class="slogan" id="quoteDisplay">„Glaube an Wunder, Liebe und Glück!“</p>
     <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">{{ visitor_count }}</span></p>
-
   </header>
 
-  <!-- Hintergrundmusik -->
   <audio id="bgMusic" autoplay loop>
     <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
-    Dein Browser unterstützt kein Audio.
   </audio>
 
-  <!-- Emoji-Regen (nur stilisiert) -->
-  <div id="emoji-rain">
-    <!-- optional: JS für fallende Emojis -->
-  </div>
-<button id="toggleThemeBtn">🌓 Dark/Light Mode</button>
-
-<script>
-  // Zitate automatisch aus JSON-Datei laden
-  const quoteDisplay = document.getElementById("quoteDisplay");
-
-  async function loadQuotes() {
-    try {
-      const response = await fetch("/static/quotes.json");
-      const quotes = await response.json();
-
-      function rotateQuotes() {
-        quoteDisplay.style.opacity = 0;
-        setTimeout(() => {
-          const index = Math.floor(Math.random() * quotes.length);
-          quoteDisplay.textContent = quotes[index];
-          quoteDisplay.style.opacity = 1;
-        }, 500);
+  <script>
+    // Zitate aus JSON laden
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    async function loadQuotes() {
+      try {
+        const response = await fetch("/static/quotes.json");
+        const quotes = await response.json();
+        function rotateQuotes() {
+          quoteDisplay.style.opacity = 0;
+          setTimeout(() => {
+            const index = Math.floor(Math.random() * quotes.length);
+            quoteDisplay.textContent = quotes[index];
+            quoteDisplay.style.opacity = 1;
+          }, 500);
+        }
+        rotateQuotes();
+        setInterval(rotateQuotes, 8000);
+      } catch (error) {
+        quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+        console.error(error);
       }
-
-      rotateQuotes();
-      setInterval(rotateQuotes, 8000);
-    } catch (error) {
-      quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
-      console.error(error);
     }
-  }
+    loadQuotes();
 
-  loadQuotes();
+    // Dark/Light Theme
+    const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+    function setTheme(theme) {
+      document.body.dataset.theme = theme;
+      localStorage.setItem("theme", theme);
+    }
+    toggleThemeBtn.addEventListener("click", () => {
+      const current = document.body.dataset.theme || "light";
+      setTheme(current === "light" ? "dark" : "light");
+    });
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
 
-  // Dark Mode toggle mit localStorage
-  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+    // Musiksteuerung
+    const bgMusic = document.getElementById('bgMusic');
+    const trackSelect = document.getElementById('trackSelect');
+    const volume = document.getElementById('volume');
+    const muteBtn = document.getElementById('muteBtn');
 
-  function setTheme(theme) {
-    document.body.dataset.theme = theme;
-    localStorage.setItem("theme", theme);
-  }
+    document.body.addEventListener('click', () => {
+      bgMusic.play().catch(() => {});
+    }, { once: true });
 
-  toggleThemeBtn.addEventListener("click", () => {
-    const current = document.body.dataset.theme || "light";
-    setTheme(current === "light" ? "dark" : "light");
-  });
+    trackSelect.addEventListener('change', () => {
+      const file = trackSelect.value;
+      bgMusic.src = `/static/${file}`;
+      bgMusic.play();
+    });
 
-  // Beim Laden gewählten Modus wiederherstellen
-  const savedTheme = localStorage.getItem("theme") || "light";
-  setTheme(savedTheme);
-</script>
+    volume.addEventListener('input', () => {
+      bgMusic.volume = volume.value;
+    });
 
+    muteBtn.addEventListener('click', () => {
+      bgMusic.muted = !bgMusic.muted;
+      muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
+    });
+
+    // Farbwechsel
+    const colorBtn = document.getElementById("colorBtn");
+    const gradients = [
+      "linear-gradient(to right, #FFDEE9, #B5FFFC)",
+      "linear-gradient(to right, #D5FFD0, #FDCB82)",
+      "linear-gradient(to right, #C9FFBF, #FBD3E9)",
+      "linear-gradient(to right, #A1C4FD, #C2FFD8)"
+    ];
+    colorBtn.addEventListener("click", () => {
+      const index = Math.floor(Math.random() * gradients.length);
+      document.body.style.background = gradients[index];
+    });
+  </script>
 </body>
 </html>
