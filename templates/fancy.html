@@ -22,6 +22,8 @@
       <button id="colorBtn">🎨 Farbwechsel</button>
     </div>
     <p class="slogan" id="quoteDisplay">„Glaube an Wunder, Liebe und Glück!“</p>
+    <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">{{ visitor_count }}</span></p>
+
   </header>
 
   <!-- Hintergrundmusik -->
@@ -34,63 +36,53 @@
   <div id="emoji-rain">
     <!-- optional: JS für fallende Emojis -->
   </div>
+<button id="toggleThemeBtn">🌓 Dark/Light Mode</button>
 
-  <script>
-    const quotes = [
-      "„Glaube an Wunder, Liebe und Glück!“",
-      "„Sei du selbst die Veränderung, die du dir wünschst.“",
-      "„Träume nicht dein Leben, lebe deinen Traum.“",
-      "„Mut steht am Anfang des Handelns, Glück am Ende.“",
-      "„Musik ist die Stimme der Seele.“",
-      "„Mit Fantasie wird alles möglich.“"
-    ];
+<script>
+  // Zitate automatisch aus JSON-Datei laden
+  const quoteDisplay = document.getElementById("quoteDisplay");
 
-    const quoteDisplay = document.getElementById("quoteDisplay");
-    function rotateQuotes() {
-      quoteDisplay.style.opacity = 0;
-      setTimeout(() => {
-        const index = Math.floor(Math.random() * quotes.length);
-        quoteDisplay.textContent = quotes[index];
-        quoteDisplay.style.opacity = 1;
-      }, 500);
+  async function loadQuotes() {
+    try {
+      const response = await fetch("/static/quotes.json");
+      const quotes = await response.json();
+
+      function rotateQuotes() {
+        quoteDisplay.style.opacity = 0;
+        setTimeout(() => {
+          const index = Math.floor(Math.random() * quotes.length);
+          quoteDisplay.textContent = quotes[index];
+          quoteDisplay.style.opacity = 1;
+        }, 500);
+      }
+
+      rotateQuotes();
+      setInterval(rotateQuotes, 8000);
+    } catch (error) {
+      quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+      console.error(error);
     }
-    rotateQuotes();
-    setInterval(rotateQuotes, 8000);
+  }
 
-    // Musiksteuerung
-    const trackSelect = document.getElementById('trackSelect');
-    const bgMusic = document.getElementById('bgMusic');
-    const volume = document.getElementById('volume');
-    const muteBtn = document.getElementById('muteBtn');
-    const colorBtn = document.getElementById('colorBtn');
+  loadQuotes();
 
-    trackSelect.addEventListener('change', () => {
-      const file = trackSelect.value;
-      bgMusic.src = `/static/${file}`;
-      bgMusic.play();
-    });
+  // Dark Mode toggle mit localStorage
+  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 
-    volume.addEventListener('input', () => {
-      bgMusic.volume = volume.value;
-    });
+  function setTheme(theme) {
+    document.body.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+  }
 
-    muteBtn.addEventListener('click', () => {
-      bgMusic.muted = !bgMusic.muted;
-      muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
-    });
+  toggleThemeBtn.addEventListener("click", () => {
+    const current = document.body.dataset.theme || "light";
+    setTheme(current === "light" ? "dark" : "light");
+  });
 
-    // Farbwechsel
-    const gradients = [
-      "linear-gradient(to right, #FFDEE9, #B5FFFC)",
-      "linear-gradient(to right, #D5FFD0, #FDCB82)",
-      "linear-gradient(to right, #C9FFBF, #FBD3E9)",
-      "linear-gradient(to right, #A1C4FD, #C2FFD8)"
-    ];
+  // Beim Laden gewählten Modus wiederherstellen
+  const savedTheme = localStorage.getItem("theme") || "light";
+  setTheme(savedTheme);
+</script>
 
-    colorBtn.addEventListener('click', () => {
-      const index = Math.floor(Math.random() * gradients.length);
-      document.body.style.background = gradients[index];
-    });
-  </script>
 </body>
 </html>

@@ -1,29 +1,36 @@
-# app.py
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import random
+import json
+import os
 
 app = Flask(__name__)
 
-emojis = ["🌈", "🚀", "🌟", "🎉", "🦄", "🧠", "🎵", "🎨", "✨"]
-quotes = [
-    "Der Weg ist das Ziel.",
-    "Verweile nicht in der Vergangenheit, träume nicht von der Zukunft, konzentriere dich auf den gegenwärtigen Moment.",
-    "Glaube an Wunder, Liebe und Glück!"
-]
+COUNTER_FILE = "visitor_count.json"
 
-@app.route('/', methods=['GET', 'POST'])
+def increment_visitor_count():
+    if not os.path.exists(COUNTER_FILE):
+        with open(COUNTER_FILE, "w") as f:
+            json.dump({"count": 1}, f)
+        return 1
+
+    with open(COUNTER_FILE, "r") as f:
+        data = json.load(f)
+
+    data["count"] += 1
+
+    with open(COUNTER_FILE, "w") as f:
+        json.dump(data, f)
+
+    return data["count"]
+
+@app.route("/")
 def home():
-    name = request.form.get("name", "")
-    hour = datetime.now().hour
-    greeting = (
-        "Guten Morgen ☀️" if hour < 12 else
-        "Guten Tag 🌤️" if hour < 18 else
-        "Guten Abend 🌙"
-    )
-    emoji = random.choice(emojis)
-    quote = random.choice(quotes)
-    return render_template("fancy.html", greeting=greeting, emoji=emoji, name=name, quote=quote)
+    count = increment_visitor_count()
+    return render_template("fancy.html", visitor_count=count)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route("/counter")
+def get_counter():
+    with open(COUNTER_FILE, "r") as f:
+        data = json.load(f)
+    return jsonify(data)

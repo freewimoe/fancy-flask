@@ -1,3 +1,26 @@
+body[data-theme="light"] {
+  --bg-color: #fff0f8;
+  --text-color: #222;
+  --box-bg: rgba(255, 255, 255, 0.9);
+}
+
+body[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #ddd;
+  --box-bg: rgba(40, 40, 40, 0.95);
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.8s ease, color 0.8s ease;
+}
+
+.topbar {
+  background: var(--box-bg);
+}
+
+
 body {
     margin: 0;
     padding-top: 110px;
@@ -40,4 +63,9 @@ button, select, input[type="range"] {
     font-size: 1em;
     color: #444;
     transition: opacity 1s ease-in-out;
+}
+#visitorDisplay {
+  font-size: 0.9em;
+  color: var(--text-color);
+  margin-top: 6px;
 }
