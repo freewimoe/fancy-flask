@@ -44,6 +44,18 @@ const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 function setTheme(theme) {
   document.body.dataset.theme = theme;
   localStorage.setItem("theme", theme);
+
+  if (theme === "dark") {
+    document.body.style.background = "linear-gradient(to bottom, #0f2027, #203a43, #2c5364)";
+    document.body.style.backgroundImage = "url('/static/moonlight.png')";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundPosition = "top right";
+    document.body.style.backgroundSize = "150px";
+  } else {
+    const savedGradient = localStorage.getItem("gradient") || "linear-gradient(to right, #FFDEE9, #B5FFFC)";
+    document.body.style.background = savedGradient;
+    document.body.style.backgroundImage = "none";
+  }
 }
 toggleThemeBtn?.addEventListener("click", () => {
   const current = document.body.dataset.theme || "light";
@@ -67,8 +79,10 @@ colorBtn?.addEventListener("click", () => {
   const g = gradients[Math.floor(Math.random() * gradients.length)];
   applyGradient(g);
 });
-const savedGradient = localStorage.getItem("gradient");
-if (savedGradient) applyGradient(savedGradient);
+if (savedTheme !== "dark") {
+  const savedGradient = localStorage.getItem("gradient");
+  if (savedGradient) applyGradient(savedGradient);
+}
 
 const bgMusic = document.getElementById('bgMusic');
 const trackSelect = document.getElementById('trackSelect');
@@ -76,6 +90,24 @@ const volume = document.getElementById('volume');
 const muteBtn = document.getElementById('muteBtn');
 
 if (bgMusic) {
+  const savedTrack = localStorage.getItem("selectedTrack");
+  if (savedTrack) {
+    bgMusic.src = `/static/${savedTrack}`;
+    if (trackSelect) trackSelect.value = savedTrack;
+  }
+  const savedVolume = localStorage.getItem("volume");
+  if (savedVolume) {
+    volume.value = savedVolume;
+    bgMusic.volume = savedVolume;
+  }
+  const savedMuted = localStorage.getItem("muted");
+  if (savedMuted === "true") {
+    bgMusic.muted = true;
+    muteBtn.textContent = "🔈 Unmute";
+  }
+
+  bgMusic.play().catch(err => console.warn("Initial play failed:", err));
+
   trackSelect?.addEventListener('change', () => {
     const file = trackSelect.value;
     bgMusic.src = `/static/${file}`;
@@ -93,25 +125,12 @@ if (bgMusic) {
     muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
     localStorage.setItem("muted", bgMusic.muted ? "true" : "false");
   });
-
-  const savedTrack = localStorage.getItem("selectedTrack");
-  if (savedTrack) {
-    bgMusic.src = `/static/${savedTrack}`;
-    if (trackSelect) trackSelect.value = savedTrack;
-  }
-  const savedVolume = localStorage.getItem("volume");
-  if (savedVolume) {
-    volume.value = savedVolume;
-    bgMusic.volume = savedVolume;
-  }
-  const savedMuted = localStorage.getItem("muted");
-  if (savedMuted === "true") {
-    bgMusic.muted = true;
-    muteBtn.textContent = "🔈 Unmute";
-  }
 }
 
-const emojis = ["🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐"];
+const emojis = [
+  "🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐",
+  "🦄", "🌈", "🎊", "🌌", "🫧", "🕊️", "🐉", "🛸", "🧚", "🪽"
+];
 const emojiContainer = document.getElementById("emoji-rain");
 const emojiToggleBtn = document.getElementById("emojiToggleBtn");
 let emojiRainOn = false;
