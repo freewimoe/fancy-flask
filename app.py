@@ -4,6 +4,7 @@ import os
 app = Flask(__name__)
 VISITOR_FILE = "visitor_count.txt"
 
+# Besucherzähler aus Datei lesen und aktualisieren
 def get_visitor_count():
     if not os.path.exists(VISITOR_FILE):
         with open(VISITOR_FILE, "w") as f:
@@ -16,6 +17,7 @@ def get_visitor_count():
         f.truncate()
     return count
 
+# Haupt-Route
 @app.route("/", methods=["GET", "POST"])
 def index():
     name = None

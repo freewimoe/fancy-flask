@@ -1,92 +1,135 @@
-/* Grundlayout */
+/* Basis-Layout */
 body {
-  margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  transition: background 0.5s, color 0.5s;
+  margin: 0;
+  padding: 0;
+  transition: background 0.5s ease, color 0.5s ease;
   background: linear-gradient(to right, #FFDEE9, #B5FFFC);
   color: #222;
+  min-height: 100vh;
 }
 
 /* Dark Theme */
-body[data-theme='dark'] {
-  background: #1e1e1e;
-  color: #f0f0f0;
+body[data-theme="dark"] {
+  background: #121212;
+  color: #e0e0e0;
 }
 
-/* Kopfbereich */
-.topbar {
-  padding: 1em;
+header.topbar {
+  padding: 1rem;
   text-align: center;
 }
 
-/* Steuerleiste */
 .controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 1em;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Emoji-Container */
-#emoji-rain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* Emoji-Stil */
-.emoji {
-  position: absolute;
-  font-size: 2em;
-  animation-name: fall;
-  animation-timing-function: linear;
-}
-
-/* Fallanimation */
-@keyframes fall {
-  0% { top: -5vh; opacity: 1; }
-  100% { top: 100vh; opacity: 0; }
-}
-
-/* Zitate & Eingabe */
-.slogan {
-  font-style: italic;
-  margin: 1em 0;
-  font-size: 1.2em;
-}
-
-.quote-input {
-  margin-top: 1em;
-}
-
-#quoteForm input {
-  padding: 0.5em;
-  border-radius: 5px;
-  border: 1px solid #aaa;
-  font-size: 1em;
-  width: 60%;
-  max-width: 300px;
-}
-
-#quoteForm button {
-  padding: 0.5em 1em;
-  font-size: 1em;
-  margin-left: 10px;
+.controls label,
+.controls select,
+.controls input,
+.controls button {
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
   border: none;
-  background-color: #4caf50;
+  border-radius: 5px;
+  background: #ffffffaa;
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+}
+
+body[data-theme="dark"] .controls label,
+body[data-theme="dark"] .controls select,
+body[data-theme="dark"] .controls input,
+body[data-theme="dark"] .controls button {
+  background: #333;
+  color: #eee;
+}
+
+/* Eingabeformular */
+form#nameForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+form#nameForm input {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+form#nameForm button {
+  margin-top: 1rem;
+  background-color: #88e;
   color: white;
+  border: none;
+  padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.85;
+/* Zitate */
+.slogan {
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  transition: opacity 0.5s;
 }
 
-form#nameForm {
-  margin: 2em 0;
+/* Besucheranzeige */
+#visitorDisplay {
+  margin-top: 0.5rem;
+}
+
+/* Emoji Regen */
+#emoji-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.emoji {
+  position: absolute;
+  top: -2rem;
+  font-size: 2rem;
+  animation: fall linear;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+/* Zitat hinzufügen */
+.quote-input {
+  margin-top: 1rem;
+}
+
+#newQuote {
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #888;
+  width: 60%;
+}
+
+#quoteForm button {
+  padding: 0.4rem 1rem;
+  border: none;
+  background-color: #6c9;
+  color: white;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  cursor: pointer;
 }

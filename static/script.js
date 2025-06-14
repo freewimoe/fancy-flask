@@ -1,75 +1,161 @@
-// static/script.js
+// Variablen aus Jinja-Template in HTML gesetzt:
+// const userName = "...";
+// const visitorCount = "...";
 
-// Uhr aktualisieren
-function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString();
+const quoteDisplay = document.getElementById("quoteDisplay");
+let userQuotes = [];
+let allQuotes = [];
+
+async function loadQuotes() {
+  try {
+    const response = await fetch("/static/quotes.json");
+    const baseQuotes = await response.json();
+    const savedUserQuotes = localStorage.getItem("userQuotes");
+    if (savedUserQuotes) userQuotes = JSON.parse(savedUserQuotes);
+    allQuotes = baseQuotes.concat(userQuotes);
+
+    function rotateQuotes() {
+      quoteDisplay.style.opacity = 0;
+      setTimeout(() => {
+        const index = Math.floor(Math.random() * allQuotes.length);
+        quoteDisplay.textContent = allQuotes[index];
+        quoteDisplay.style.opacity = 1;
+      }, 500);
+    }
+
+    rotateQuotes();
+    setInterval(rotateQuotes, 8000);
+  } catch (err) {
+    quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+    console.error(err);
+  }
 }
-setInterval(updateClock, 1000);
-updateClock();
 
-// Farbwechsel
-function changeGradient() {
-    const colors = [
-        ["#fbd3e9", "#bbd0ff"],
-        ["#FFDEE9", "#B5FFFC"],
-        ["#C9FFBF", "#FBD3E9"],
-        ["#FF9A9E", "#A1C4FD"],
-    ];
-    const selected = colors[Math.floor(Math.random() * colors.length)];
-    document.body.style.background = `linear-gradient(to right, ${selected[0]}, ${selected[1]})`;
+if (userName) loadQuotes();
+
+window.addEventListener("DOMContentLoaded", () => {
+  const bgMusic = document.getElementById("bgMusic");
+  if (bgMusic && userName) {
+    bgMusic.play().catch(err => console.log("Autoplay prevented:", err));
+  }
+});
+
+const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+function setTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem("theme", theme);
 }
+toggleThemeBtn?.addEventListener("click", () => {
+  const current = document.body.dataset.theme || "light";
+  setTheme(current === "light" ? "dark" : "light");
+});
+const savedTheme = localStorage.getItem("theme") || "light";
+setTheme(savedTheme);
 
-// Audio-Steuerung
-const audio = document.getElementById('bgm');
-const volumeSlider = document.getElementById('volume');
-const muteBtn = document.getElementById('muteBtn');
+const colorBtn = document.getElementById("colorBtn");
+const gradients = [
+  "linear-gradient(to right, #FFDEE9, #B5FFFC)",
+  "linear-gradient(to right, #D5FFD0, #FDCB82)",
+  "linear-gradient(to right, #C9FFBF, #FBD3E9)",
+  "linear-gradient(to right, #A1C4FD, #C2FFD8)"
+];
+function applyGradient(g) {
+  document.body.style.background = g;
+  localStorage.setItem("gradient", g);
+}
+colorBtn?.addEventListener("click", () => {
+  const g = gradients[Math.floor(Math.random() * gradients.length)];
+  applyGradient(g);
+});
+const savedGradient = localStorage.getItem("gradient");
+if (savedGradient) applyGradient(savedGradient);
+
+const bgMusic = document.getElementById('bgMusic');
 const trackSelect = document.getElementById('trackSelect');
+const volume = document.getElementById('volume');
+const muteBtn = document.getElementById('muteBtn');
 
-volumeSlider.addEventListener('input', () => {
-    audio.volume = volumeSlider.value;
-});
+if (bgMusic) {
+  trackSelect?.addEventListener('change', () => {
+    const file = trackSelect.value;
+    bgMusic.src = `/static/${file}`;
+    localStorage.setItem("selectedTrack", file);
+    bgMusic.play();
+  });
 
-muteBtn.addEventListener('click', () => {
-    audio.muted = !audio.muted;
-    muteBtn.textContent = audio.muted ? '🔈 Unmute' : '🔇 Mute';
-});
+  volume?.addEventListener('input', () => {
+    bgMusic.volume = volume.value;
+    localStorage.setItem("volume", volume.value);
+  });
 
-trackSelect.addEventListener('change', () => {
-    audio.src = `/static/${trackSelect.value}`;
-    audio.play();
-});
+  muteBtn?.addEventListener('click', () => {
+    bgMusic.muted = !bgMusic.muted;
+    muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
+    localStorage.setItem("muted", bgMusic.muted ? "true" : "false");
+  });
 
-// Emoji-Regen (Canvas)
-const canvas = document.getElementById("emojiRain");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const emojis = ["🎉", "✨", "🌈", "🦄", "🎶"];
-let particles = [];
-
-function createParticle() {
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: -20,
-        speedY: 2 + Math.random() * 3,
-        text: emoji,
-        size: 24 + Math.random() * 16
-    });
+  const savedTrack = localStorage.getItem("selectedTrack");
+  if (savedTrack) {
+    bgMusic.src = `/static/${savedTrack}`;
+    if (trackSelect) trackSelect.value = savedTrack;
+  }
+  const savedVolume = localStorage.getItem("volume");
+  if (savedVolume) {
+    volume.value = savedVolume;
+    bgMusic.volume = savedVolume;
+  }
+  const savedMuted = localStorage.getItem("muted");
+  if (savedMuted === "true") {
+    bgMusic.muted = true;
+    muteBtn.textContent = "🔈 Unmute";
+  }
 }
 
-function drawParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach((p, i) => {
-        ctx.font = `${p.size}px serif`;
-        ctx.fillText(p.text, p.x, p.y);
-        p.y += p.speedY;
-        if (p.y > canvas.height) particles.splice(i, 1);
-    });
-    requestAnimationFrame(drawParticles);
+const emojis = ["🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐"];
+const emojiContainer = document.getElementById("emoji-rain");
+const emojiToggleBtn = document.getElementById("emojiToggleBtn");
+let emojiRainOn = false;
+let emojiInterval = null;
+
+function createEmoji() {
+  const emoji = document.createElement("div");
+  emoji.classList.add("emoji");
+  emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+  emoji.style.left = Math.random() * 100 + "vw";
+  emoji.style.animationDuration = (Math.random() * 2 + 3) + "s";
+  emojiContainer.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 5000);
 }
 
-setInterval(createParticle, 300);
-drawParticles();
+function startEmojiRain() {
+  if (!emojiInterval) emojiInterval = setInterval(createEmoji, 300);
+}
+
+function stopEmojiRain() {
+  clearInterval(emojiInterval);
+  emojiInterval = null;
+}
+
+function toggleEmojiRain() {
+  emojiRainOn = !emojiRainOn;
+  localStorage.setItem("emojiRainOn", emojiRainOn ? "true" : "false");
+  emojiToggleBtn.textContent = emojiRainOn ? "🌧️ Emoji-Regen: AN" : "🌧️ Emoji-Regen: AUS";
+  if (emojiRainOn) startEmojiRain(); else stopEmojiRain();
+}
+
+emojiToggleBtn?.addEventListener("click", toggleEmojiRain);
+if (localStorage.getItem("emojiRainOn") === "true") toggleEmojiRain();
+
+const quoteForm = document.getElementById("quoteForm");
+quoteForm?.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const input = document.getElementById("newQuote");
+  const text = input.value.trim();
+  if (text) {
+    allQuotes.push(text);
+    userQuotes.push(text);
+    localStorage.setItem("userQuotes", JSON.stringify(userQuotes));
+    input.value = "";
+    alert("Zitat hinzugefügt!");
+  }
+});

@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Fancy Flask Extended</title>
+  <title>Chill Lounge</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -20,99 +20,41 @@
       <button id="muteBtn">🔇 Mute</button>
       <button id="colorBtn">🎨 Farbwechsel</button>
       <button id="toggleThemeBtn">🌓 Dark/Light Mode</button>
+      <button id="emojiToggleBtn">🌧️ Emoji-Regen: AUS</button>
     </div>
 
     {% if name %}
-      <h2>👋 Willkommen, {{ name }}!</h2>
+      <h2>👋 Willkommen in der Chill Lounge, {{ name }}!</h2>
     {% else %}
       <form method="post" id="nameForm">
-        <input type="text" name="name" placeholder="Wie heißt du?" required>
-        <button type="submit">Sag Hallo</button>
+        <label for="nameInput">Chill Lounge: Gib deinen Namen an.</label>
+        <input type="text" name="name" id="nameInput" placeholder="Dein Name" required>
+        <button type="submit">Start</button>
       </form>
     {% endif %}
 
-    <p class="slogan" id="quoteDisplay">„Glaube an Wunder, Liebe und Glück!“</p>
-    <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">{{ visitor_count }}</span></p>
+    {% if name %}
+      <p class="slogan" id="quoteDisplay">„Glaube an Wunder, Liebe und Glück!“</p>
+      <p id="visitorDisplay">👁️ Besucher: <span id="visitorCount">{{ visitor_count }}</span></p>
+
+      <div class="quote-input">
+        <form id="quoteForm">
+          <input type="text" id="newQuote" placeholder="Eigenes Zitat hinzufügen..." required>
+          <button type="submit">➕ Hinzufügen</button>
+        </form>
+      </div>
+    {% endif %}
   </header>
 
-  <audio id="bgMusic" autoplay loop>
+  <div id="emoji-rain"></div>
+
+  {% if name %}
+  <audio id="bgMusic" loop>
     <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
   </audio>
+  {% endif %}
 
-  <script>
-    // Zitate aus JSON laden
-    const quoteDisplay = document.getElementById("quoteDisplay");
-    async function loadQuotes() {
-      try {
-        const response = await fetch("/static/quotes.json");
-        const quotes = await response.json();
-        function rotateQuotes() {
-          quoteDisplay.style.opacity = 0;
-          setTimeout(() => {
-            const index = Math.floor(Math.random() * quotes.length);
-            quoteDisplay.textContent = quotes[index];
-            quoteDisplay.style.opacity = 1;
-          }, 500);
-        }
-        rotateQuotes();
-        setInterval(rotateQuotes, 8000);
-      } catch (error) {
-        quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
-        console.error(error);
-      }
-    }
-    loadQuotes();
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    // Dark/Light Theme
-    const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-    function setTheme(theme) {
-      document.body.dataset.theme = theme;
-      localStorage.setItem("theme", theme);
-    }
-    toggleThemeBtn.addEventListener("click", () => {
-      const current = document.body.dataset.theme || "light";
-      setTheme(current === "light" ? "dark" : "light");
-    });
-    const savedTheme = localStorage.getItem("theme") || "light";
-    setTheme(savedTheme);
-
-    // Musiksteuerung
-    const bgMusic = document.getElementById('bgMusic');
-    const trackSelect = document.getElementById('trackSelect');
-    const volume = document.getElementById('volume');
-    const muteBtn = document.getElementById('muteBtn');
-
-    document.body.addEventListener('click', () => {
-      bgMusic.play().catch(() => {});
-    }, { once: true });
-
-    trackSelect.addEventListener('change', () => {
-      const file = trackSelect.value;
-      bgMusic.src = `/static/${file}`;
-      bgMusic.play();
-    });
-
-    volume.addEventListener('input', () => {
-      bgMusic.volume = volume.value;
-    });
-
-    muteBtn.addEventListener('click', () => {
-      bgMusic.muted = !bgMusic.muted;
-      muteBtn.textContent = bgMusic.muted ? '🔈 Unmute' : '🔇 Mute';
-    });
-
-    // Farbwechsel
-    const colorBtn = document.getElementById("colorBtn");
-    const gradients = [
-      "linear-gradient(to right, #FFDEE9, #B5FFFC)",
-      "linear-gradient(to right, #D5FFD0, #FDCB82)",
-      "linear-gradient(to right, #C9FFBF, #FBD3E9)",
-      "linear-gradient(to right, #A1C4FD, #C2FFD8)"
-    ];
-    colorBtn.addEventListener("click", () => {
-      const index = Math.floor(Math.random() * gradients.length);
-      document.body.style.background = gradients[index];
-    });
-  </script>
 </body>
 </html>
