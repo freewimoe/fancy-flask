@@ -1,10 +1,20 @@
-// Globale Konstanten
+// Fancy Flask Script.js
+
+const gradients = [
+  "linear-gradient(to right, #FFDEE9, #B5FFFC)",
+  "linear-gradient(to right, #D5FFD0, #FDCB82)",
+  "linear-gradient(to right, #C9FFBF, #FBD3E9)",
+  "linear-gradient(to right, #A1C4FD, #C2FFD8)",
+  "linear-gradient(to right, #f6d365, #fda085)",
+  "linear-gradient(to right, #fbc2eb, #a6c1ee)"
+];
+
+const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+const colorBtn = document.getElementById("colorBtn");
 const emojiToggleBtn = document.getElementById("emojiToggleBtn");
 const trackSelect = document.getElementById("trackSelect");
 const volume = document.getElementById("volume");
 const muteBtn = document.getElementById("muteBtn");
-const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-const colorBtn = document.getElementById("colorBtn");
 const bgMusic = document.getElementById("bgMusic");
 const quoteDisplay = document.getElementById("quoteDisplay");
 const quoteForm = document.getElementById("quoteForm");
@@ -12,30 +22,37 @@ const emojiContainer = document.getElementById("emoji-rain");
 
 let emojiRainOn = false;
 let emojiInterval = null;
-let userQuotes = [];
-let allQuotes = [];
+const emojis = ["🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐", "🦄", "🌈", "🎊", "🌌", "🫧", "🕊️", "🐉", "🛸", "🧚", "🪽"];
 
-const emojis = [
-  "🎶", "✨", "🎧", "🎵", "💫", "🎼", "🌟", "🪐",
-  "🦄", "🌈", "🎊", "🌌", "🫧", "🕊️", "🐉", "🛸", "🧚", "🪽"
-];
+function setTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem("theme", theme);
 
-const gradients = [
-  "linear-gradient(to right, #FFDEE9, #B5FFFC)",
-  "linear-gradient(to right, #D5FFD0, #FDCB82)",
-  "linear-gradient(to right, #C9FFBF, #FBD3E9)",
-  "linear-gradient(to right, #A1C4FD, #C2FFD8)"
-];
+  if (theme === "dark") {
+    document.body.style.background = "linear-gradient(to bottom, #050505, #101010, #1b1b1b)";
+    document.body.style.backgroundImage = "url('/static/moon.png')";
+    document.body.style.backgroundSize = "75%";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
+  } else {
+    const savedGradient = localStorage.getItem("gradient") || gradients[0];
+    document.body.style.background = savedGradient;
+    document.body.style.backgroundImage = "none";
+  }
+}
 
-// Emoji-Regen
-function createEmoji() {
-  const emoji = document.createElement("div");
-  emoji.classList.add("emoji");
-  emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-  emoji.style.left = Math.random() * 100 + "vw";
-  emoji.style.animationDuration = (Math.random() * 2 + 3) + "s";
-  emojiContainer.appendChild(emoji);
-  setTimeout(() => emoji.remove(), 6000);
+function applyGradient(g) {
+  if (document.body.dataset.theme === "light") {
+    document.body.style.background = g;
+    localStorage.setItem("gradient", g);
+  }
+}
+
+function toggleEmojiRain() {
+  emojiRainOn = !emojiRainOn;
+  localStorage.setItem("emojiRainOn", emojiRainOn ? "true" : "false");
+  emojiToggleBtn.textContent = emojiRainOn ? "🌧️ Emoji-Regen: AN" : "🌧️ Emoji-Regen: AUS";
+  if (emojiRainOn) startEmojiRain(); else stopEmojiRain();
 }
 
 function startEmojiRain() {
@@ -47,140 +64,117 @@ function stopEmojiRain() {
   emojiInterval = null;
 }
 
-function toggleEmojiRain() {
-  emojiRainOn = !emojiRainOn;
-  localStorage.setItem("emojiRainOn", emojiRainOn ? "true" : "false");
-  emojiToggleBtn.textContent = emojiRainOn ? "🌧️ Emoji-Regen: AN" : "🌧️ Emoji-Regen: AUS";
-  if (emojiRainOn) startEmojiRain(); else stopEmojiRain();
+function createEmoji() {
+  const emoji = document.createElement("div");
+  emoji.classList.add("emoji");
+  emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+  emoji.style.left = Math.random() * 100 + "vw";
+  emoji.style.animationDuration = (Math.random() * 2 + 3) + "s";
+  emojiContainer.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 5000);
 }
 
-// Zitate
-async function loadQuotes() {
-  try {
-    const response = await fetch("/static/quotes.json");
-    const baseQuotes = await response.json();
-    const savedUserQuotes = localStorage.getItem("userQuotes");
-    if (savedUserQuotes) userQuotes = JSON.parse(savedUserQuotes);
-    allQuotes = baseQuotes.concat(userQuotes);
-
-    function rotateQuotes() {
-      if (!quoteDisplay) return;
-      quoteDisplay.style.opacity = 0;
-      setTimeout(() => {
-        const index = Math.floor(Math.random() * allQuotes.length);
-        quoteDisplay.textContent = allQuotes[index];
-        quoteDisplay.style.opacity = 1;
-      }, 500);
-    }
-
-    rotateQuotes();
-    setInterval(rotateQuotes, 8000);
-  } catch (err) {
-    if (quoteDisplay) quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
-    console.error(err);
-  }
+function loadQuotes() {
+  fetch("/static/quotes.json")
+    .then(res => res.json())
+    .then(baseQuotes => {
+      const saved = JSON.parse(localStorage.getItem("userQuotes") || "[]");
+      const allQuotes = baseQuotes.concat(saved);
+      function rotateQuotes() {
+        quoteDisplay.style.opacity = 0;
+        setTimeout(() => {
+          quoteDisplay.textContent = allQuotes[Math.floor(Math.random() * allQuotes.length)];
+          quoteDisplay.style.opacity = 1;
+        }, 500);
+      }
+      rotateQuotes();
+      setInterval(rotateQuotes, 8000);
+    })
+    .catch(() => {
+      quoteDisplay.textContent = "Zitat konnte nicht geladen werden.";
+    });
 }
 
-// Theme & Farben
-function setTheme(theme) {
-  document.body.dataset.theme = theme;
-  localStorage.setItem("theme", theme);
-
-  if (theme === "dark") {
-    document.body.style.background = "linear-gradient(to bottom, #050505, #101010, #1b1b1b)";
-    document.body.style.backgroundImage = "url('/static/moon.png')";
-    document.body.style.backgroundSize = "75%";
-    document.body.style.backgroundPosition = "center center";
-    document.body.style.backgroundRepeat = "no-repeat";
-  } else {
-    const savedGradient = localStorage.getItem("gradient") || gradients[0];
-    document.body.style.background = savedGradient;
-    document.body.style.backgroundImage = "none";
-  }
-}
-
-function applyGradient(g) {
-  document.body.style.background = g;
-  localStorage.setItem("gradient", g);
-}
-
-// Musiksteuerung
-function setupMusicControls() {
-  const savedTrack = localStorage.getItem("selectedTrack");
-  if (savedTrack && bgMusic) {
-    bgMusic.src = `/static/${savedTrack}`;
-    trackSelect.value = savedTrack;
-  }
-  const savedVolume = localStorage.getItem("volume");
-  if (savedVolume && bgMusic) {
-    volume.value = savedVolume;
-    bgMusic.volume = savedVolume;
-  }
-  if (localStorage.getItem("muted") === "true" && bgMusic) {
-    bgMusic.volume = 0;
-    muteBtn.textContent = "🔈 Unmute";
-  }
-
-  trackSelect?.addEventListener("change", () => {
-    const file = trackSelect.value;
-    bgMusic.src = `/static/${file}`;
-    localStorage.setItem("selectedTrack", file);
-    bgMusic.play();
-  });
-
-  volume?.addEventListener("input", () => {
-    bgMusic.volume = volume.value;
-    localStorage.setItem("volume", volume.value);
-  });
-
-  muteBtn?.addEventListener("click", () => {
-    if (bgMusic.volume > 0) {
-      localStorage.setItem("prevVolume", bgMusic.volume);
-      bgMusic.volume = 0;
-      muteBtn.textContent = "🔈 Unmute";
-    } else {
-      const prev = localStorage.getItem("prevVolume") || 0.5;
-      bgMusic.volume = prev;
-      muteBtn.textContent = "🔇 Mute";
-    }
-  });
-}
-
-// Eventlistener
+// Initial setup
 window.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("emojiRainOn") === "true") toggleEmojiRain();
   const savedTheme = localStorage.getItem("theme") || "light";
   setTheme(savedTheme);
+  if (savedTheme === "light") {
+    const savedGradient = localStorage.getItem("gradient") || gradients[0];
+    applyGradient(savedGradient);
+  }
 
-  const savedGradient = localStorage.getItem("gradient");
-  if (savedTheme !== "dark" && savedGradient) applyGradient(savedGradient);
+  const savedTrack = localStorage.getItem("selectedTrack");
+  const savedVolume = localStorage.getItem("volume");
+  const savedMuted = localStorage.getItem("muted");
 
-  setupMusicControls();
+  if (bgMusic) {
+    if (savedTrack) {
+      bgMusic.src = `/static/${savedTrack}`;
+      if (trackSelect) trackSelect.value = savedTrack;
+    }
+    if (savedVolume) {
+      bgMusic.volume = savedVolume;
+      volume.value = savedVolume;
+    }
+    if (savedMuted === "true") {
+      bgMusic.muted = true;
+      muteBtn.textContent = "🔈 Unmute";
+    }
+
+    bgMusic.play().catch(err => console.warn("Autoplay failed:", err));
+  }
+
+  if (localStorage.getItem("emojiRainOn") === "true") toggleEmojiRain();
   loadQuotes();
 });
 
-// Button Events
+// Event Listeners
 toggleThemeBtn?.addEventListener("click", () => {
   const current = document.body.dataset.theme || "light";
   setTheme(current === "light" ? "dark" : "light");
 });
 
 colorBtn?.addEventListener("click", () => {
-  if (document.body.dataset.theme === "dark") return;
   const g = gradients[Math.floor(Math.random() * gradients.length)];
   applyGradient(g);
 });
 
+trackSelect?.addEventListener("change", () => {
+  const file = trackSelect.value;
+  bgMusic.src = `/static/${file}`;
+  localStorage.setItem("selectedTrack", file);
+  bgMusic.play();
+});
+
+volume?.addEventListener("input", () => {
+  bgMusic.volume = volume.value;
+  localStorage.setItem("volume", volume.value);
+});
+
+muteBtn?.addEventListener("click", () => {
+  if (bgMusic.volume > 0) {
+    localStorage.setItem("prevVolume", bgMusic.volume);
+    bgMusic.volume = 0;
+    muteBtn.textContent = "🔈 Unmute";
+  } else {
+    const prev = localStorage.getItem("prevVolume") || 0.5;
+    bgMusic.volume = prev;
+    volume.value = prev;
+    muteBtn.textContent = "🔇 Mute";
+  }
+});
+
 emojiToggleBtn?.addEventListener("click", toggleEmojiRain);
 
-quoteForm?.addEventListener("submit", function (e) {
+quoteForm?.addEventListener("submit", (e) => {
   e.preventDefault();
   const input = document.getElementById("newQuote");
   const text = input.value.trim();
   if (text) {
-    allQuotes.push(text);
-    userQuotes.push(text);
-    localStorage.setItem("userQuotes", JSON.stringify(userQuotes));
+    const saved = JSON.parse(localStorage.getItem("userQuotes") || "[]");
+    saved.push(text);
+    localStorage.setItem("userQuotes", JSON.stringify(saved));
     input.value = "";
     alert("Zitat hinzugefügt!");
   }
