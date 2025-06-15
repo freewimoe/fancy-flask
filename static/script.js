@@ -38,15 +38,34 @@ function setTheme(theme) {
   if (theme === "dark") {
     const g = darkGradients[Math.floor(Math.random() * darkGradients.length)];
     document.body.style.background = g;
-    document.body.style.backgroundImage = "url('/static/moon.png')";
-    document.body.style.backgroundSize = "75%";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.backgroundRepeat = "no-repeat";
     document.body.style.transition = "background 2s ease-in-out";
+
+    // Immer den Mond einblenden
+    const moon = document.createElement("div");
+    moon.id = "moon-overlay";
+    moon.style.position = "fixed";
+    moon.style.top = "50%";
+    moon.style.left = "50%";
+    moon.style.transform = "translate(-50%, -50%)";
+    moon.style.width = "75vmin";
+    moon.style.height = "75vmin";
+    moon.style.backgroundImage = "url('/static/moon.png')";
+    moon.style.backgroundSize = "contain";
+    moon.style.backgroundRepeat = "no-repeat";
+    moon.style.backgroundPosition = "center";
+    moon.style.zIndex = "0";
+    moon.style.opacity = "0.6";
+    moon.style.pointerEvents = "none";
+    moon.style.transition = "opacity 2s ease-in-out";
+    if (!document.getElementById("moon-overlay")) {
+      document.body.appendChild(moon);
+    }
   } else {
     const savedGradient = localStorage.getItem("gradient") || gradients[0];
     document.body.style.background = savedGradient;
     document.body.style.backgroundImage = "none";
+    const moon = document.getElementById("moon-overlay");
+    if (moon) moon.remove();
   }
 }
 
@@ -57,6 +76,10 @@ function applyGradient(g) {
   } else {
     const gDark = darkGradients[Math.floor(Math.random() * darkGradients.length)];
     document.body.style.background = gDark;
+    document.body.style.backgroundImage = "url('/static/moon.png')";
+    document.body.style.backgroundSize = "75%";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
   }
 }
 
