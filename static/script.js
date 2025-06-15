@@ -89,7 +89,7 @@ body[data-theme="light"] .button-bar button {
   border: 1px solid #aaa;
   width: 300px;
 }
-
+ 
 #quoteForm button {
   background-color: #2ecc71;
   border: none;
@@ -104,7 +104,7 @@ body[data-theme="light"] .button-bar button {
   background-color: #27ae60;
 }
 
-/* Emoji-Regen */
+/* Emoji-Regen */  
 #emoji-rain {
   position: fixed;
   top: 0;
