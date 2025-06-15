@@ -9,6 +9,13 @@ const gradients = [
   "linear-gradient(to right, #fbc2eb, #a6c1ee)"
 ];
 
+const darkGradients = [
+  "linear-gradient(to bottom, #0a0a0a, #1a1a1a)",
+  "linear-gradient(to bottom, #111, #222, #333)",
+  "linear-gradient(to bottom, #2b2b2b, #1f1f1f)",
+  "linear-gradient(to bottom, #141e30, #243b55)"
+];
+
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 const colorBtn = document.getElementById("colorBtn");
 const emojiToggleBtn = document.getElementById("emojiToggleBtn");
@@ -29,11 +36,13 @@ function setTheme(theme) {
   localStorage.setItem("theme", theme);
 
   if (theme === "dark") {
-    document.body.style.background = "linear-gradient(to bottom, #050505, #101010, #1b1b1b)";
+    const g = darkGradients[Math.floor(Math.random() * darkGradients.length)];
+    document.body.style.background = g;
     document.body.style.backgroundImage = "url('/static/moon.png')";
     document.body.style.backgroundSize = "75%";
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.transition = "background 2s ease-in-out";
   } else {
     const savedGradient = localStorage.getItem("gradient") || gradients[0];
     document.body.style.background = savedGradient;
@@ -45,6 +54,9 @@ function applyGradient(g) {
   if (document.body.dataset.theme === "light") {
     document.body.style.background = g;
     localStorage.setItem("gradient", g);
+  } else {
+    const gDark = darkGradients[Math.floor(Math.random() * darkGradients.length)];
+    document.body.style.background = gDark;
   }
 }
 
@@ -82,6 +94,7 @@ function loadQuotes() {
       const allQuotes = baseQuotes.concat(saved);
       function rotateQuotes() {
         quoteDisplay.style.opacity = 0;
+        quoteDisplay.style.transition = "opacity 1.5s ease-in-out";
         setTimeout(() => {
           quoteDisplay.textContent = allQuotes[Math.floor(Math.random() * allQuotes.length)];
           quoteDisplay.style.opacity = 1;
@@ -136,7 +149,9 @@ toggleThemeBtn?.addEventListener("click", () => {
 });
 
 colorBtn?.addEventListener("click", () => {
-  const g = gradients[Math.floor(Math.random() * gradients.length)];
+  const g = document.body.dataset.theme === "dark"
+    ? darkGradients[Math.floor(Math.random() * darkGradients.length)]
+    : gradients[Math.floor(Math.random() * gradients.length)];
   applyGradient(g);
 });
 
