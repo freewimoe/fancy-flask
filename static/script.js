@@ -1,8 +1,9 @@
 /* Fancy Flask Styles */
 
-/* Import custom fonts */
+/* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa&family=Merriweather:wght@300;700&display=swap');
 
+/* Grundlayout */
 body {
   font-family: 'Comfortaa', cursive;
   margin: 0;
@@ -11,6 +12,7 @@ body {
   transition: background 1.5s ease-in-out, color 0.5s ease;
   min-height: 100vh;
   text-align: center;
+  position: relative;
   z-index: 1;
 }
 
@@ -20,6 +22,7 @@ body[data-theme="dark"] {
   background-color: #000;
 }
 
+/* Überschrift */
 h1 {
   font-size: 2.2rem;
   margin-top: 2rem;
@@ -30,7 +33,7 @@ p {
   margin: 0.5rem 0 1.5rem;
 }
 
-/* Controls */
+/* Steuerungsbereiche */
 .audio-controls,
 .button-bar {
   display: flex;
@@ -66,16 +69,21 @@ body[data-theme="light"] .button-bar button {
   color: #fff;
 }
 
-/* Zitate */
+/* Zitatanzeige mit Fading */
 #quoteDisplay {
   font-style: italic;
   font-size: 1.4rem;
   margin: 2rem 1rem 1rem;
   transition: opacity 1.5s ease-in-out;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+  opacity: 0;
 }
 
-/* Zitat-Formular */
+body.loaded #quoteDisplay {
+  opacity: 1;
+}
+
+/* Formular */
 #quoteForm {
   display: flex;
   justify-content: center;
@@ -89,7 +97,7 @@ body[data-theme="light"] .button-bar button {
   border: 1px solid #aaa;
   width: 300px;
 }
- 
+
 #quoteForm button {
   background-color: #2ecc71;
   border: none;
@@ -104,7 +112,7 @@ body[data-theme="light"] .button-bar button {
   background-color: #27ae60;
 }
 
-/* Emoji-Regen */  
+/* Emoji-Regen */
 #emoji-rain {
   position: fixed;
   top: 0;
@@ -112,7 +120,7 @@ body[data-theme="light"] .button-bar button {
   pointer-events: none;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 5;
 }
 
 .emoji {
@@ -137,12 +145,24 @@ body[data-theme="light"] .button-bar button {
   }
 }
 
-/* Mond immer hinter Inhalt */
+/* Mond im Hintergrund */
 #moon-overlay {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 65vmin;
+  height: 65vmin;
+  background-image: url('/static/moon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
   z-index: 0;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;
 }
 
-/* Inhalt sicher drüber */
+/* Inhaltsebene */
 main,
 .audio-controls,
 .button-bar,

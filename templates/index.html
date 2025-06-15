@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body data-theme="light">  
-  
+
   {% if not name %}  
   <!-- Startscreen -->
   <div class="start-screen">
@@ -20,11 +20,11 @@
   </div>
   {% else %}
   <!-- Hauptinhalt -->
-  <div class="main-content">
+  <main class="main-content">
     <h2>Hi {{ name }} 👋 Willkommen in der Chill Lounge</h2>
     <p>Besucher: {{ visitor_count }}</p>
 
-    <div class="controls">
+    <div class="controls audio-controls">
       <label for="trackSelect">🎶</label>
       <select id="trackSelect">
         <option value="Lowtone Music - Chill Calm.mp3">Chill Calm</option>
@@ -49,19 +49,21 @@
     <audio id="bgMusic" loop autoplay>
       <source src="{{ url_for('static', filename='Lowtone Music - Chill Calm.mp3') }}" type="audio/mp3">
     </audio>
-
-  </div>
+  </main>
   {% endif %}
 
   <!-- Emoji- & Nebeleffekte -->
   <div id="emoji-rain"></div>
   <div id="fog-layer"></div>
 
-  <!-- Skript -->
+  <!-- Übergabe von Python-Werten -->
   <script>
     const userName = "{{ name | safe }}";
     const visitorCount = {{ visitor_count | default(0) }};
+    document.body.classList.add("loaded");
   </script>
+
+  <!-- Hauptskript -->
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
