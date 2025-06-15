@@ -112,7 +112,7 @@ body[data-theme="light"] .button-bar button {
   pointer-events: none;
   width: 100%;
   height: 100%;
-  z-index: 999;
+  z-index: 1;
 }
 
 .emoji {
